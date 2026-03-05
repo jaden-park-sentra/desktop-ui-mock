@@ -64,7 +64,7 @@ const HomePage = () => {
       <div className="max-w-[780px] mx-auto flex flex-col">
 
         <header>
-          <h1 className="text-foreground text-[28px] font-semibold leading-[1.2] tracking-tight m-0">
+          <h1 className="text-foreground text-[28px] font-normal leading-[1.2] tracking-tight m-0">
             {getGreeting()}, Jaden
           </h1>
           <p className="text-muted-foreground text-[14px] leading-normal mt-[8px] m-0">
@@ -74,7 +74,7 @@ const HomePage = () => {
 
         <section className="flex flex-col mt-[40px]">
           <div className="flex items-center gap-[8px] pb-[16px]">
-            <h2 className="text-foreground text-[13px] font-semibold leading-none m-0">Actions</h2>
+            <h2 className="text-foreground text-[13px] font-normal leading-none m-0">Actions</h2>
             <span className="text-disabled-foreground text-[12px] font-medium leading-none font-mono">
               {ACTIONS.length}
             </span>
@@ -87,7 +87,7 @@ const HomePage = () => {
                 className="group flex items-center gap-[16px] py-[16px] px-[20px] bg-background rounded-lg border-none cursor-pointer text-left w-full overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-md hover:ring-1 hover:ring-border-info focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
               >
                 <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
-                  <h3 className="text-foreground text-[13px] font-semibold leading-[1.4] m-0">{action.title}</h3>
+                  <h3 className="text-foreground text-[13px] font-normal leading-[1.4] m-0">{action.title}</h3>
                   <p className="text-subtle-foreground text-[12px] leading-normal m-0 line-clamp-1">{action.description}</p>
                 </div>
                 <div className="flex items-center gap-[8px] shrink-0">
@@ -101,7 +101,7 @@ const HomePage = () => {
 
         <section className="flex flex-col mt-[40px]">
           <div className="flex items-center gap-[8px] pb-[16px]">
-            <h2 className="text-foreground text-[13px] font-semibold leading-none m-0">Risks to review</h2>
+            <h2 className="text-foreground text-[13px] font-normal leading-none m-0">Risks to review</h2>
             <span className="text-disabled-foreground text-[12px] font-medium leading-none font-mono">
               {RISKS.length}
             </span>
@@ -118,7 +118,7 @@ const HomePage = () => {
                     <span
                       className={`w-[6px] h-[6px] rounded-full shrink-0 ${risk.severity === 'critical' ? 'bg-(--status-red)' : 'bg-(--status-yellow)'}`}
                     />
-                    <h3 className="text-foreground text-[13px] font-semibold leading-[1.4] m-0">{risk.title}</h3>
+                    <h3 className="text-foreground text-[13px] font-normal leading-[1.4] m-0">{risk.title}</h3>
                   </div>
                   <p className="text-subtle-foreground text-[12px] leading-normal m-0 line-clamp-1">{risk.description}</p>
                 </div>
@@ -132,7 +132,7 @@ const HomePage = () => {
 
         <section className="flex flex-col mt-[40px]">
           <div className="flex items-center gap-[8px] pb-[16px]">
-            <h2 className="text-foreground text-[13px] font-semibold leading-none m-0">Meetings today</h2>
+            <h2 className="text-foreground text-[13px] font-normal leading-none m-0">Meetings today</h2>
             <span className="text-disabled-foreground text-[12px] font-medium leading-none font-mono">
               {TODAYS_MEETINGS.length}
             </span>
@@ -147,12 +147,12 @@ const HomePage = () => {
                 <div
                   className={`w-[72px] shrink-0 text-right pr-[12px] border-r mr-[4px] ${meeting.isNext ? 'border-r-border-info' : 'border-r-border-subtle'}`}
                 >
-                  <span className="text-foreground text-[13px] font-semibold font-mono tabular-nums leading-none">
+                  <span className="text-foreground text-[13px] font-normal font-mono tabular-nums leading-none">
                     {meeting.time}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
-                  <h3 className="text-foreground text-[13px] font-semibold leading-[1.4] m-0">{meeting.name}</h3>
+                  <h3 className="text-foreground text-[13px] font-normal leading-[1.4] m-0">{meeting.name}</h3>
                   <p className="text-subtle-foreground text-[12px] leading-normal m-0">
                     {meeting.duration} · {meeting.participants} participants
                   </p>

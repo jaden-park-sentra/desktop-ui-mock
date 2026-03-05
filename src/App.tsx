@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
 import AppLayout from './components/app-layout';
 import HomePage from './pages/home';
@@ -16,13 +16,15 @@ import IntegrationsPage from './pages/integrations';
 import ConnectionsPage from './pages/connections';
 import ConnectionDetailPage from './pages/connection-detail';
 import SettingsPage from './pages/settings';
+import { SageWindow } from './components/sage/SageWindow';
 
 const App = () => {
   return (
     <ThemeProvider>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/sage" element={<SageWindow />} />
         <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/meeting-notes" element={<MeetingNotesPage />} />
@@ -41,7 +43,7 @@ const App = () => {
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
     </ThemeProvider>
   );
 };

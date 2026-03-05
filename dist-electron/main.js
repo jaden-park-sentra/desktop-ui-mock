@@ -1,4 +1,4 @@
-import { nativeImage, app, BrowserWindow } from "electron";
+import { nativeImage, ipcMain, app, BrowserWindow, screen } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 const __dirname$1 = path.dirname(fileURLToPath(import.meta.url));
@@ -9,6 +9,7 @@ const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
 const appIcon = nativeImage.createFromPath(path.join(process.env.APP_ROOT, "resources", "icon.png"));
 let win;
+let sageWin;
 function createWindow() {
   win = new BrowserWindow({
     icon: appIcon,
@@ -29,6 +30,48 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
+function createSageWindow() {
+  if (sageWin && !sageWin.isDestroyed()) {
+    sageWin.focus();
+    return;
+  }
+  const display = screen.getPrimaryDisplay();
+  const { width: screenW, height: screenH } = display.workAreaSize;
+  sageWin = new BrowserWindow({
+    width: 700,
+    height: screenH,
+    x: screenW - 700,
+    y: 0,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    hasShadow: false,
+    skipTaskbar: false,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname$1, "preload.mjs")
+    }
+  });
+  sageWin.setIgnoreMouseEvents(false);
+  const sageHash = "#/sage";
+  if (VITE_DEV_SERVER_URL) {
+    sageWin.loadURL(`${VITE_DEV_SERVER_URL}${sageHash}`);
+  } else {
+    sageWin.loadFile(path.join(RENDERER_DIST, "index.html"), { hash: "/sage" });
+  }
+  sageWin.on("closed", () => {
+    sageWin = null;
+  });
+}
+ipcMain.on("open-sage-window", () => {
+  createSageWindow();
+});
+ipcMain.on("close-sage-window", () => {
+  if (sageWin && !sageWin.isDestroyed()) {
+    sageWin.close();
+    sageWin = null;
+  }
+});
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();

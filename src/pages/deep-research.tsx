@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion } from 'motion/react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import {
   PromptInput,
   PromptInputTextarea,
@@ -116,48 +115,116 @@ const DotsLoader = () => (
 );
 
 const CopyIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="4" width="8" height="8" rx="1" />
-    <path d="M3 10V3h7" />
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
 const ShareIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 7.5L10 5M5 7.5L10 10" />
-    <circle cx="3.5" cy="7.5" r="1.5" />
-    <circle cx="11.5" cy="4.5" r="1.5" />
-    <circle cx="11.5" cy="10.5" r="1.5" />
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+    <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
   </svg>
 );
 
-const StreamingMarkdown = ({ content }: { content: string }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+const WORD_INTERVAL_MS = 15;
+
+const StreamingMarkdown = ({ content, onReveal }: { content: string; onReveal?: () => void }) => {
+  const words = content.split(/(\s+)/);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevCountRef = useRef(0);
+
   useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      setDisplayedText(content.slice(0, index));
-      index += 3; // Reveal 3 chars at a time for smooth morphing
-      if (index > content.length) {
-        setDisplayedText(content);
-        clearInterval(interval);
+    setVisibleCount(0);
+    prevCountRef.current = 0;
+    if (words.length === 0) return;
+
+    let frame: number;
+    let count = 0;
+    const start = performance.now();
+
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const target = Math.min(Math.floor(elapsed / WORD_INTERVAL_MS) + 1, words.length);
+      if (target !== count) {
+        count = target;
+        setVisibleCount(count);
       }
-    }, 10);
-    
-    return () => clearInterval(interval);
+      if (count < words.length) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [content]);
 
+  useLayoutEffect(() => {
+    if (!containerRef.current) return;
+    const walker = document.createTreeWalker(containerRef.current, NodeFilter.SHOW_TEXT);
+    let wordIndex = 0;
+    const node = walker.nextNode();
+    const processNode = (textNode: Node) => {
+      const parent = textNode.parentElement;
+      if (!parent) return;
+      const textContent = textNode.textContent || '';
+      const parts = textContent.split(/(\s+)/);
+      const fragment = document.createDocumentFragment();
+      for (const part of parts) {
+        if (part === '') continue;
+        const span = document.createElement('span');
+        span.textContent = part;
+        if (wordIndex >= prevCountRef.current && part.trim()) {
+          span.style.animation = 'wordFadeIn 0.3s ease-out forwards';
+          span.style.opacity = '0';
+        }
+        fragment.appendChild(span);
+        if (part.trim()) wordIndex++;
+      }
+      parent.replaceChild(fragment, textNode);
+    };
+
+    if (node) {
+      const textNodes: Node[] = [];
+      let current: Node | null = node;
+      while (current) {
+        textNodes.push(current);
+        current = walker.nextNode();
+      }
+      textNodes.forEach(processNode);
+    }
+    prevCountRef.current = visibleCount;
+    onReveal?.();
+  }, [visibleCount]);
+
+  const visibleText = words.slice(0, visibleCount).join('');
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <MessageContent markdown className="p-0 text-base [&_p]:text-base [&_li]:text-base [&_h1]:text-base [&_h2]:text-base [&_h3]:text-base">
-        {displayedText}
-      </MessageContent>
-    </motion.div>
+    <div className="prose prose-sm max-w-none text-foreground [&_p]:my-1 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-1 [&_ul]:pl-4 [&_li]:my-0.5 [&_ol]:my-1 [&_ol]:pl-4 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-semibold [&_h1]:mt-2 [&_h1]:mb-1 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mt-2 [&_h2]:mb-1 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-2 [&_h3]:mb-1 text-[15px] leading-[1.6] [&_p]:text-[15px] [&_p]:leading-[1.6] [&_li]:text-[15px] [&_li]:leading-[1.6]">
+      <style>{`
+        @keyframes wordFadeIn {
+          from { opacity: 0; filter: blur(4px); }
+          to { opacity: 1; filter: blur(0px); }
+        }
+      `}</style>
+      <div ref={containerRef}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{visibleText}</ReactMarkdown>
+      </div>
+    </div>
   );
 };
 
@@ -167,11 +234,20 @@ const DeepResearchPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messageCountRef = useRef(0);
+  const inputAreaRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+    scrollToBottom();
+  }, [messages, isLoading, scrollToBottom]);
 
   const handleSubmit = useCallback(() => {
     const trimmedInput = input.trim();
@@ -203,6 +279,9 @@ const DeepResearchPage = () => {
 
   const handleSuggestionClick = useCallback((suggestion: string) => {
     setInput(suggestion);
+    setTimeout(() => {
+      inputAreaRef.current?.querySelector('textarea')?.focus();
+    }, 0);
   }, []);
 
   const handleCopy = useCallback((messageId: string, content: string) => {
@@ -234,7 +313,7 @@ const DeepResearchPage = () => {
       </div>
 
       {/* Messages area */}
-      <div className={`flex-1 min-h-0 overflow-y-auto ${hasMessages ? 'pt-[24px] pb-[8px]' : 'p-0'}`}>
+      <div ref={scrollContainerRef} className={`flex-1 min-h-0 overflow-y-auto ${hasMessages ? 'pt-[24px] pb-[8px]' : 'p-0'}`}>
         {!hasMessages ? (
           <div className="items-center flex flex-col h-full justify-center py-[32px] px-[24px] text-center">
             <h2 className="text-foreground font-[Inter,system-ui,sans-serif] text-[15px] font-semibold leading-[20px] m-0 mb-[6px]">
@@ -261,29 +340,33 @@ const DeepResearchPage = () => {
             {messages.map((message) =>
               message.role === 'user' ? (
                 <Message key={message.id} className="justify-end">
-                  <div className="bg-secondary rounded-[18px_18px_4px_18px] text-foreground text-sm max-w-[72%] px-4 py-3 shadow-sm">
+                  <div className="bg-secondary rounded-[18px_18px_4px_18px] text-foreground text-[15px] leading-relaxed max-w-[72%] px-[16px] py-[10px]">
                     {message.content}
                   </div>
                 </Message>
               ) : (
                 <Message key={message.id} className="items-start">
-                  <div className="flex flex-col gap-2 flex-1 min-w-0">
-                    <StreamingMarkdown content={message.content} />
-                    <MessageActions className="opacity-0 group-hover:opacity-100 transition-opacity gap-2">
-                      <MessageAction
-                        tooltip="Copy"
+                  <div className="flex flex-col gap-[8px] flex-1 min-w-0 group">
+                    <StreamingMarkdown content={message.content} onReveal={scrollToBottom} />
+                    <MessageActions className="flex items-center gap-1 mt-1">
+                      <button
+                        title="Copy"
                         onClick={() => handleCopy(message.id, message.content)}
-                        className={`h-9 w-9 hover:bg-transparent hover:text-foreground text-muted-foreground ${copiedId === message.id ? 'text-success' : ''}`}
+                        className={`inline-flex items-center justify-center size-6 rounded-md text-muted-foreground hover:bg-gray-100 hover:text-foreground transition-colors cursor-pointer border-none bg-transparent ${copiedId === message.id ? 'text-success hover:text-success' : ''}`}
                       >
-                        <CopyIcon />
-                      </MessageAction>
-                      <MessageAction
-                        tooltip="Share"
+                        {copiedId === message.id ? (
+                          <CheckIcon />
+                        ) : (
+                          <CopyIcon />
+                        )}
+                      </button>
+                      <button
+                        title="Share"
                         onClick={() => {}}
-                        className="h-9 w-9 hover:bg-transparent hover:text-foreground text-muted-foreground"
+                        className="inline-flex items-center justify-center size-6 rounded-md text-muted-foreground hover:bg-gray-100 hover:text-foreground transition-colors cursor-pointer border-none bg-transparent"
                       >
                         <ShareIcon />
-                      </MessageAction>
+                      </button>
                     </MessageActions>
                   </div>
                 </Message>
@@ -301,7 +384,7 @@ const DeepResearchPage = () => {
 
       {/* Input area */}
       <div className="bg-background shrink-0 pt-[12px] px-[16px] pb-[16px]">
-        <div className="mx-auto max-w-[680px]">
+        <div ref={inputAreaRef} className="mx-auto max-w-[680px]">
           <PromptInput
             value={input}
             onValueChange={setInput}

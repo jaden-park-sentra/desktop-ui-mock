@@ -1,21 +1,11 @@
-import { app, BrowserWindow, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage, screen } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
 process.env.APP_ROOT = path.join(__dirname, '..')
 
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
@@ -25,6 +15,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 const appIcon = nativeImage.createFromPath(path.join(process.env.APP_ROOT, 'resources', 'icon.png'))
 
 let win: BrowserWindow | null
+let sageWin: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
@@ -39,7 +30,6 @@ function createWindow() {
 
   win.maximize()
 
-  // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
@@ -47,14 +37,61 @@ function createWindow() {
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
   } else {
-    // win.loadFile('dist/index.html')
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+function createSageWindow() {
+  if (sageWin && !sageWin.isDestroyed()) {
+    sageWin.focus()
+    return
+  }
+
+  const display = screen.getPrimaryDisplay()
+  const { width: screenW, height: screenH } = display.workAreaSize
+
+  sageWin = new BrowserWindow({
+    width: 700,
+    height: screenH,
+    x: screenW - 700,
+    y: 0,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    hasShadow: false,
+    skipTaskbar: false,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.mjs'),
+    },
+  })
+
+  // Allow clicks to pass through transparent areas
+  sageWin.setIgnoreMouseEvents(false)
+
+  const sageHash = '#/sage'
+  if (VITE_DEV_SERVER_URL) {
+    sageWin.loadURL(`${VITE_DEV_SERVER_URL}${sageHash}`)
+  } else {
+    sageWin.loadFile(path.join(RENDERER_DIST, 'index.html'), { hash: '/sage' })
+  }
+
+  sageWin.on('closed', () => {
+    sageWin = null
+  })
+}
+
+ipcMain.on('open-sage-window', () => {
+  createSageWindow()
+})
+
+ipcMain.on('close-sage-window', () => {
+  if (sageWin && !sageWin.isDestroyed()) {
+    sageWin.close()
+    sageWin = null
+  }
+})
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -63,8 +100,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }

@@ -59,12 +59,40 @@ const MEETING_GROUPS: MeetingGroup[] = [
   },
 ];
 
-const UPCOMING_HERO = MEETING_GROUPS[0].meetings[0];
 
-const UPCOMING_SIDE = [
-  { id: 'roadmap', title: 'Product Roadmap Review', time: 'Today at 4:30 PM' },
-  { id: 'eng-sync', title: 'Sentra Eng Sync', time: 'Tomorrow at 3:15 PM' },
-  { id: 'all-hands', title: 'All Hands', time: 'Friday at 3:00 PM' },
+
+interface UpcomingDay {
+  label: string;
+  weekday: string;
+  date: string;
+  meetings: Meeting[];
+}
+
+const UPCOMING_DAYS: UpcomingDay[] = [
+  {
+    label: 'today',
+    weekday: 'Wed',
+    date: '26',
+    meetings: MEETING_GROUPS[0].meetings,
+  },
+  {
+    label: 'tomorrow',
+    weekday: 'Thu',
+    date: '27',
+    meetings: [
+      { id: 'eng-sync', title: 'Sentra Eng Sync', attendees: 'Andrey, Justin', time: '3:15 PM', icon: 'multi' },
+      { id: 'design-review', title: 'Design Review — Pill v3', attendees: 'Andrey, Justin', time: '11:00 AM', icon: 'single' },
+    ],
+  },
+  {
+    label: 'friday',
+    weekday: 'Fri',
+    date: '28',
+    meetings: [
+      { id: 'all-hands', title: 'All Hands', attendees: 'Ashwin, Andrey, Justin, Kristina & 8 others', time: '3:00 PM', icon: 'multi' },
+      { id: 'investor-call', title: 'Investor Call — Series A', attendees: 'Ashwin, Justin', time: '10:30 AM', icon: 'lock' },
+    ],
+  },
 ];
 
 const RESEARCH_SUGGESTIONS = [
@@ -139,6 +167,25 @@ const MEETING_COLOR: Record<MeetingIconType, string> = {
   lock: '#8B5CF6',
 };
 
+const MeetingIcon = ({ type }: { type: MeetingIconType }) => {
+  if (type === 'multi') return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+  if (type === 'lock') return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+};
+
 const DotsLoader = () => (
   <div className="items-center flex gap-1 h-4 px-0.5">
     {[0, 1, 2].map((dotIndex) => (
@@ -163,7 +210,7 @@ const MeetingNotesPage = () => {
   const [panelWidth, setPanelWidth] = useState(DEFAULT_PANEL_WIDTH);
   const [showPanel, setShowPanel] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [hoveredMeetingId, setHoveredMeetingId] = useState<string | null>(null);
 
   const [researchInput, setResearchInput] = useState('');
   const [researchMessages, setResearchMessages] = useState<ResearchMessage[]>([]);
@@ -316,52 +363,42 @@ const MeetingNotesPage = () => {
 
         <div className="pt-6 w-full" />
 
-        {/* Upcoming hero + side cards */}
-        <div className="flex shrink-0 gap-4 h-fit min-h-[180px] w-full">
-          <button
-            type="button"
-            onClick={() => navigate('/meeting-detail')}
-            className="bg-background border-border rounded-xl border-solid border cursor-pointer flex basis-0 grow shrink overflow-clip p-0 text-left"
-          >
-            <div className="bg-[#2B7FFF] shrink-0 w-1" />
-            <div className="flex basis-0 flex-col grow shrink gap-2.5 py-6 px-7">
-              <div className="text-muted-foreground inline-block font-[Inter,system-ui,sans-serif] text-[13px] leading-4">
-                Today at 2:00 PM
-              </div>
-              <div className="text-foreground inline-block font-[Manrope,system-ui,sans-serif] text-[22px] font-bold leading-7">
-                {UPCOMING_HERO.title}
-              </div>
-              <div className="text-[var(--fg-subtle)] inline-block font-[Inter,system-ui,sans-serif] text-sm leading-5">
-                {UPCOMING_HERO.attendees} — weekly sync on sprint progress, blockers, and upcoming priorities.
-              </div>
-              <div className="items-center flex gap-2 mt-1">
-                <div className="text-[#2B7FFF] inline-block font-[Inter,system-ui,sans-serif] text-sm font-semibold leading-[18px]">
-                  Join meeting →
+        {/* Upcoming — single card with all days */}
+        <div className="bg-background border-border rounded-xl border-solid border flex flex-col shrink-0 w-full max-w-[680px]">
+          {UPCOMING_DAYS.map((day) => (
+            <div key={day.label} className="flex items-start gap-4 px-5 py-4">
+              <div className="bg-secondary flex flex-col items-center rounded-lg shrink-0 w-12 pt-2 pb-2 gap-0.5">
+                <div className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[10px] leading-none uppercase tracking-wide">
+                  {day.weekday}
                 </div>
+                <div className="text-foreground font-[Inter,system-ui,sans-serif] text-xl leading-none">
+                  {day.date}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2.5 flex-1 min-w-0 pt-1">
+                {day.meetings.map((meeting) => (
+                  <button
+                    key={meeting.id}
+                    type="button"
+                    onClick={() => navigate('/meeting-detail')}
+                    className="bg-transparent border-none cursor-pointer flex items-center gap-3 p-0 text-left w-full"
+                  >
+                    <div className="rounded-full shrink-0 w-[3px] self-stretch" style={{ backgroundColor: MEETING_COLOR[meeting.icon] }} />
+                    <div className="text-foreground font-[Inter,system-ui,sans-serif] text-sm leading-5 flex-1 min-w-0 truncate">
+                      {meeting.title}
+                    </div>
+                    <div className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4 shrink-0">
+                      {meeting.time}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
-          </button>
-          <div className="flex flex-col shrink-0 gap-2 h-fit w-[200px]">
-            {UPCOMING_SIDE.map((upcomingMeeting) => (
-              <button
-                key={upcomingMeeting.id}
-                type="button"
-                onClick={() => navigate('/meeting-detail')}
-                className="bg-background border-border rounded-[10px] border-solid border cursor-pointer flex flex-col gap-0.5 py-4 px-[18px] text-left"
-              >
-                <div className="text-foreground inline-block font-[Manrope,system-ui,sans-serif] text-sm font-bold leading-[18px]">
-                  {upcomingMeeting.title}
-                </div>
-                <div className="text-muted-foreground inline-block font-[Inter,system-ui,sans-serif] text-xs leading-4">
-                  {upcomingMeeting.time}
-                </div>
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
 
         {/* Meeting list */}
-        <div className="flex basis-0 flex-col grow shrink mt-2 w-full overflow-y-auto">
+        <div className="flex basis-0 flex-col grow shrink mt-2 w-full max-w-[680px] overflow-y-auto">
           {filteredGroups.length === 0 ? (
             <div className="items-center text-disabled-foreground flex font-[Inter,system-ui,sans-serif] text-[13px] justify-center py-10">
               No meetings match "{searchQuery}"
@@ -374,26 +411,31 @@ const MeetingNotesPage = () => {
                     {group.label}
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  {group.meetings.map((meeting) => (
-                    <button
-                      key={meeting.id}
-                      type="button"
-                      onClick={() => navigate('/meeting-detail')}
-                      className="bg-background border-border rounded-[10px] border-solid border cursor-pointer flex overflow-clip p-0 text-left w-full"
-                    >
-                      <div className="shrink-0 w-1" style={{ backgroundColor: MEETING_COLOR[meeting.icon] }} />
-                      <div className="flex flex-col gap-0.5 py-4 px-[18px]">
-                        <div className="text-foreground font-[Manrope,system-ui,sans-serif] text-sm font-bold leading-[18px]">
-                          {meeting.title}
-                        </div>
-                        <div className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
-                          {meeting.time}
-                        </div>
+                {group.meetings.map((meeting) => (
+                  <button
+                    key={meeting.id}
+                    type="button"
+                    onClick={() => navigate('/meeting-detail')}
+                    onMouseEnter={() => setHoveredMeetingId(meeting.id)}
+                    onMouseLeave={() => setHoveredMeetingId(null)}
+                    className={`items-center ${hoveredMeetingId === meeting.id ? 'bg-[var(--bg-base-hover)]' : 'bg-transparent'} border-none rounded-lg cursor-pointer flex gap-3 py-2.5 px-3 text-left w-full`}
+                  >
+                    <div className="flex basis-0 flex-col grow shrink gap-0.5">
+                      <div className="text-foreground font-[Inter,system-ui,sans-serif] text-sm font-medium leading-[18px]">
+                        {meeting.title}
                       </div>
-                    </button>
-                  ))}
-                </div>
+                      <div className="text-disabled-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
+                        {meeting.attendees}
+                      </div>
+                    </div>
+                    <div className="items-center flex flex-row-reverse gap-2">
+                      <div className="text-disabled-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
+                        {meeting.time}
+                      </div>
+                      <MeetingIcon type={meeting.icon} />
+                    </div>
+                  </button>
+                ))}
               </div>
             ))
           )}

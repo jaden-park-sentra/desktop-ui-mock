@@ -190,6 +190,16 @@ const AppSidebar = () => {
       </div>
 
       <div className="flex flex-col flex-1 gap-px justify-end p-3">
+        <button
+          type="button"
+          className={`${navItemClass} mb-1`}
+          onClick={() => window.ipcRenderer?.send("open-sage-window")}
+        >
+          <span className="w-4 h-4 shrink-0 flex items-center justify-center">
+            {(() => { const Ico = outlineIcons["bolt"]; return Ico ? <Ico width={16} height={16} /> : null; })()}
+          </span>
+          Sage Demo
+        </button>
         <SidebarFooterToggles />
         {footerItems.map((navItem) => (
           <SidebarNavItem key={navItem.id} item={navItem} />
