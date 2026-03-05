@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 
 type CommitmentStatus = 'open' | 'completed';
 type FilterTab = 'all' | 'open' | 'completed';
@@ -16,8 +15,8 @@ interface Commitment {
 const COMMITMENTS: Commitment[] = [
   {
     id: '1',
-    title: 'Ship Pill v2 for pre-launch testing',
-    meetingName: 'SXSW Launch Planning',
+    title: 'Ship Module v2 for pre-launch testing',
+    meetingName: 'Q2 Launch Planning',
     date: 'Feb 24',
     dueLabel: 'Due Mar 10',
     status: 'open',
@@ -25,15 +24,15 @@ const COMMITMENTS: Commitment[] = [
   {
     id: '2',
     title: 'Coordinate press kit and media outreach',
-    meetingName: 'SXSW Launch Planning',
+    meetingName: 'Q2 Launch Planning',
     date: 'Feb 24',
     dueLabel: 'Due Mar 5',
     status: 'open',
   },
   {
     id: '3',
-    title: 'Send Relay team the integration API docs',
-    meetingName: 'Customer Discovery — Relay',
+    title: 'Send Vantage team the integration API docs',
+    meetingName: 'Customer Discovery — Vantage',
     date: 'Feb 25',
     dueLabel: 'Due Feb 28',
     status: 'open',
@@ -48,8 +47,8 @@ const COMMITMENTS: Commitment[] = [
   },
   {
     id: '5',
-    title: "Review Andrey's Pill v2 design mockups",
-    meetingName: 'Design Review — Pill v2',
+    title: "Review Jordan's Module v2 design mockups",
+    meetingName: 'Design Review — Module v2',
     date: 'Feb 24',
     dueLabel: null,
     status: 'completed',
@@ -81,13 +80,6 @@ const CheckCircleIcon = ({ checked }: { checked: boolean }) => {
 const CommitmentsPage = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('open');
   const [commitments, setCommitments] = useState<Commitment[]>(COMMITMENTS);
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setPortalTarget(document.getElementById('topbar-actions'));
-    return () => setPortalTarget(null);
-  }, []);
-
   const toggleCommitment = (id: string) => {
     setCommitments((previous) =>
       previous.map((commitment) =>
@@ -104,24 +96,21 @@ const CommitmentsPage = () => {
   });
 
   return (
-    <div className="bg-muted min-h-full pt-[56px] px-[40px] pb-[40px]">
-      {portalTarget && createPortal(
-        <div className="flex items-center gap-[4px]">
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveFilter(tab.id)}
-              className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${activeFilter === tab.id ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>,
-        portalTarget
-      )}
+    <div className="bg-background min-h-full pt-[56px] px-[40px] pb-[40px] relative">
+      <div className="flex items-center gap-[4px] absolute top-[10px] right-[20px]">
+        {FILTER_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveFilter(tab.id)}
+            className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${activeFilter === tab.id ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <div className="mx-auto max-w-[640px] w-full">
+      <div className="mx-auto max-w-[680px] w-full">
         <h1 className="text-foreground font-[Inter,system-ui,sans-serif] text-[28px] font-medium tracking-[-0.02em] leading-[34px] m-0 mb-[24px]">
           Commitments
         </h1>

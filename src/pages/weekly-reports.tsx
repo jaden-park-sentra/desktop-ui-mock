@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 
 type View = 'reports' | 'radar';
 
@@ -16,7 +15,7 @@ interface RadarGroup {
   name: string;
   itemCount: number;
   latestDate: string;
-  priority: { level: 'HIGH' | 'MED' | 'LOW'; count: number } | null;
+  priority: { level: 'High' | 'Med' | 'Low'; count: number } | null;
   items: string[];
 }
 
@@ -54,10 +53,10 @@ const REPORT_GROUPS: ReportGroup[] = [
 const RADAR_GROUPS: RadarGroup[] = [
   {
     id: 'sxsw',
-    name: 'SXSW Launch',
+    name: 'Q2 Launch',
     itemCount: 5,
     latestDate: 'Feb 24',
-    priority: { level: 'HIGH', count: 2 },
+    priority: { level: 'High', count: 2 },
     items: ['Feb 24', 'Feb 17'],
   },
   {
@@ -65,7 +64,7 @@ const RADAR_GROUPS: RadarGroup[] = [
     name: 'Product Development',
     itemCount: 3,
     latestDate: 'Feb 24',
-    priority: { level: 'MED', count: 1 },
+    priority: { level: 'Med', count: 1 },
     items: ['Feb 24', 'Feb 17'],
   },
   {
@@ -73,7 +72,7 @@ const RADAR_GROUPS: RadarGroup[] = [
     name: 'Partnerships',
     itemCount: 2,
     latestDate: 'Feb 25',
-    priority: { level: 'MED', count: 1 },
+    priority: { level: 'Med', count: 1 },
     items: ['Feb 25'],
   },
 ];
@@ -94,13 +93,6 @@ const ChevronRight = () => (
 const WeeklyReportsPage = () => {
   const [view, setView] = useState<View>('reports');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setPortalTarget(document.getElementById('topbar-actions'));
-    return () => setPortalTarget(null);
-  }, []);
-
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((previous) => {
       const next = new Set(previous);
@@ -114,35 +106,32 @@ const WeeklyReportsPage = () => {
   };
 
   return (
-    <div className="items-center bg-[#F5F5F3] flex basis-0 flex-col grow shrink h-full overflow-clip px-[48px] pt-[56px] relative">
+    <div className="items-center bg-background flex basis-0 flex-col grow shrink h-full overflow-clip px-[48px] pt-[56px] relative">
 
-      {portalTarget && createPortal(
-        <div className="items-center flex gap-[4px]">
-          <button
-            type="button"
-            onClick={() => setView('reports')}
-            className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${view === 'reports' ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
-          >
-            Reports
-          </button>
-          <button
-            type="button"
-            onClick={() => setView('radar')}
-            className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${view === 'radar' ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
-          >
-            Radar
-          </button>
-        </div>,
-        portalTarget
-      )}
+      <div className="items-center flex gap-[4px] absolute top-[10px] right-[20px]">
+        <button
+          type="button"
+          onClick={() => setView('reports')}
+          className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${view === 'reports' ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
+        >
+          Reports
+        </button>
+        <button
+          type="button"
+          onClick={() => setView('radar')}
+          className={`appearance-none border-none rounded-full cursor-pointer font-[Geist,system-ui,sans-serif] text-[14px] font-medium leading-[18px] outline-none py-[6px] px-[14px] ${view === 'radar' ? 'bg-[#1A1D21] text-white' : 'bg-transparent text-[#8A8A85]'}`}
+        >
+          Radar
+        </button>
+      </div>
 
-      <div className="mb-[8px] max-w-[740px] w-full">
+      <div className="mb-[8px] max-w-[680px] w-full">
         <div className="text-[#1A1D21] font-[Inter,system-ui,sans-serif] text-[28px] font-medium tracking-[-0.02em] leading-[34px] whitespace-nowrap">
           {view === 'reports' ? 'Reports' : 'Radar'}
         </div>
       </div>
 
-      <div className="flex flex-col max-w-[740px] w-full">
+      <div className="flex flex-col max-w-[680px] w-full">
         {view === 'reports' ? (
           REPORT_GROUPS.map((group) => {
             const isExpanded = expandedGroups.has(group.id);
@@ -222,8 +211,8 @@ const WeeklyReportsPage = () => {
                       <div className="items-end flex gap-[2px]">
                         {[
                           { height: 4, filled: true },
-                          { height: 7, filled: group.priority.level === 'MED' || group.priority.level === 'HIGH' },
-                          { height: 10, filled: group.priority.level === 'HIGH' },
+                          { height: 7, filled: group.priority.level === 'Med' || group.priority.level === 'High' },
+                          { height: 10, filled: group.priority.level === 'High' },
                         ].map((bar, barIndex) => (
                           <div
                             key={barIndex}

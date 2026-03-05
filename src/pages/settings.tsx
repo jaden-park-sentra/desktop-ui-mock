@@ -1,7 +1,7 @@
 // Artboard: 11 — Settings
 
 const SectionLabel = ({ children }: { children: string }) => (
-  <div className="text-[#6B7585] font-[Inter,system-ui,sans-serif] text-[11px] font-semibold tracking-[0.06em] leading-[16px] mb-[12px] uppercase">
+  <div className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[11px] font-semibold tracking-[0.06em] leading-[16px] mb-[12px]">
     {children}
   </div>
 );
@@ -15,14 +15,14 @@ interface InputFieldProps {
 
 const InputField = ({ label, value, placeholder, type = 'text' }: InputFieldProps) => (
   <div className="flex flex-col gap-[4px]">
-    <label className="text-[#6B7585] font-[Inter,system-ui,sans-serif] text-[12px] font-medium leading-[16px]">
+    <label className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[12px] font-medium leading-[16px]">
       {label}
     </label>
     <input
       type={type}
       defaultValue={value}
       placeholder={placeholder}
-      className="bg-[#FAFAFA] border border-solid border-[#E5E5E3] rounded-[8px] text-[#1A1D21] font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px] outline-none py-[8px] px-[12px] w-full"
+      className="bg-field border border-solid border-border rounded-[8px] text-foreground font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px] outline-none py-[8px] px-[12px] w-full"
     />
   </div>
 );
@@ -34,12 +34,12 @@ interface SelectFieldProps {
 
 const SelectField = ({ label, value }: SelectFieldProps) => (
   <div className="flex flex-col gap-[4px]">
-    <label className="text-[#6B7585] font-[Inter,system-ui,sans-serif] text-[12px] font-medium leading-[16px]">
+    <label className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[12px] font-medium leading-[16px]">
       {label}
     </label>
-    <div className="flex items-center bg-[#FAFAFA] border border-solid border-[#E5E5E3] rounded-[8px] justify-between py-[8px] px-[12px]">
-      <span className="text-[#1A1D21] font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{value}</span>
-      <svg width="12" height="12" viewBox="0 0 15 15" fill="none" stroke="#6B7585" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <div className="flex items-center bg-field border border-solid border-border rounded-[8px] justify-between py-[8px] px-[12px]">
+      <span className="text-foreground font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{value}</span>
+      <svg width="12" height="12" viewBox="0 0 15 15" fill="none" className="stroke-muted-foreground" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 5.5L7.5 10L12 5.5" />
       </svg>
     </div>
@@ -54,17 +54,17 @@ interface ToggleRowProps {
 }
 
 const ToggleRow = ({ title, description, value, enabled = false }: ToggleRowProps) => (
-  <div className="flex items-center border-b border-b-[#E5E5E3] justify-between py-[16px]">
+  <div className="flex items-center border-b border-b-border justify-between py-[16px]">
     <div className="flex flex-col gap-[2px]">
-      <span className="text-[#1A1D21] font-[Inter,system-ui,sans-serif] text-[14px] font-medium leading-[18px]">{title}</span>
-      <span className="text-[#6B7585] font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{description}</span>
+      <span className="text-foreground font-[Inter,system-ui,sans-serif] text-[14px] font-medium leading-[18px]">{title}</span>
+      <span className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{description}</span>
     </div>
     <div className="flex items-center shrink-0 gap-[10px] ml-[24px]">
       {value && (
-        <span className="text-[#6B7585] font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{value}</span>
+        <span className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-[13px] leading-[16px]">{value}</span>
       )}
-      <div className={`rounded-full cursor-pointer h-[20px] p-[2px] transition-[background-color] duration-150 w-[36px] ${enabled ? 'bg-[#1A1D21]' : 'bg-[#E5E5E3]'}`}>
-        <div className={`bg-white rounded-full h-[16px] transition-transform duration-150 w-[16px] ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+      <div className={`rounded-full cursor-pointer h-[20px] p-[2px] transition-[background-color] duration-150 w-[36px] ${enabled ? 'bg-foreground' : 'bg-border'}`}>
+        <div className={`bg-background rounded-full h-[16px] transition-transform duration-150 w-[16px] ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
       </div>
     </div>
   </div>
@@ -72,10 +72,10 @@ const ToggleRow = ({ title, description, value, enabled = false }: ToggleRowProp
 
 const SettingsPage = () => {
   return (
-    <div className="bg-white min-h-full pt-[56px] pr-[40px] pb-[40px] pl-[20px]">
-      <div className="max-w-[640px] w-full">
+    <div className="bg-background min-h-full pt-[56px] px-[40px] pb-[40px]">
+      <div className="max-w-[680px] mx-auto w-full">
 
-        <h1 className="text-[#1A1D21] font-[Inter,system-ui,sans-serif] text-[28px] font-medium tracking-[-0.02em] leading-[34px] m-0 mb-[16px]">
+        <h1 className="text-foreground font-[Inter,system-ui,sans-serif] text-[28px] font-medium tracking-[-0.02em] leading-[34px] m-0 mb-[16px]">
           Settings
         </h1>
 
@@ -94,7 +94,7 @@ const SettingsPage = () => {
             <div className="flex justify-end mt-[4px]">
               <button
                 type="button"
-                className="bg-[#1A1D21] border-none rounded-[8px] text-white cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[16px] py-[8px] px-[16px]"
+                className="bg-foreground border-none rounded-[8px] text-background cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[16px] py-[8px] px-[16px]"
               >
                 Save Changes
               </button>
@@ -103,7 +103,7 @@ const SettingsPage = () => {
         </div>
 
         {/* Meeting Bot & Appearance */}
-        <div className="border-t border-t-[#E5E5E3] mb-[32px]">
+        <div className="border-t border-t-border mb-[32px]">
           <ToggleRow
             title="Meeting Bot"
             description="Allow Sentra to join scheduled meetings and take notes."
@@ -125,7 +125,7 @@ const SettingsPage = () => {
             <div className="flex justify-end mt-[4px]">
               <button
                 type="button"
-                className="bg-white border border-solid border-[#E5E5E3] rounded-[8px] text-[#1A1D21] cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[16px] py-[8px] px-[16px]"
+                className="bg-background border border-solid border-border rounded-[8px] text-foreground cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[16px] py-[8px] px-[16px]"
               >
                 Change password
               </button>

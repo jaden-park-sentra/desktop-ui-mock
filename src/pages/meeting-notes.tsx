@@ -133,23 +133,10 @@ const MAX_PANEL_WIDTH = 480;
 
 type MeetingIconType = 'multi' | 'single' | 'lock';
 
-const MeetingIcon = ({ type }: { type: MeetingIconType }) => {
-  if (type === 'multi') return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-  if (type === 'lock') return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CDD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-    </svg>
-  );
+const MEETING_COLOR: Record<MeetingIconType, string> = {
+  multi: '#2B7FFF',
+  single: '#10B981',
+  lock: '#8B5CF6',
 };
 
 const DotsLoader = () => (
@@ -176,7 +163,6 @@ const MeetingNotesPage = () => {
   const [panelWidth, setPanelWidth] = useState(DEFAULT_PANEL_WIDTH);
   const [showPanel, setShowPanel] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [hoveredMeetingId, setHoveredMeetingId] = useState<string | null>(null);
 
 
   const [researchInput, setResearchInput] = useState('');
@@ -328,10 +314,10 @@ const MeetingNotesPage = () => {
           </div>
         </div>
 
-        <div className="pt-6 w-full max-w-[640px]" />
+        <div className="pt-6 w-full" />
 
         {/* Upcoming hero + side cards */}
-        <div className="flex shrink-0 gap-4 h-fit min-h-[180px] w-full max-w-[640px]">
+        <div className="flex shrink-0 gap-4 h-fit min-h-[180px] w-full">
           <button
             type="button"
             onClick={() => navigate('/meeting-detail')}
@@ -375,7 +361,7 @@ const MeetingNotesPage = () => {
         </div>
 
         {/* Meeting list */}
-        <div className="flex basis-0 flex-col grow shrink mt-2 w-full max-w-[640px] overflow-y-auto">
+        <div className="flex basis-0 flex-col grow shrink mt-2 w-full overflow-y-auto">
           {filteredGroups.length === 0 ? (
             <div className="items-center text-disabled-foreground flex font-[Inter,system-ui,sans-serif] text-[13px] justify-center py-10">
               No meetings match "{searchQuery}"
@@ -388,31 +374,26 @@ const MeetingNotesPage = () => {
                     {group.label}
                   </div>
                 </div>
-                {group.meetings.map((meeting) => (
-                  <button
-                    key={meeting.id}
-                    type="button"
-                    onClick={() => navigate('/meeting-detail')}
-                    onMouseEnter={() => setHoveredMeetingId(meeting.id)}
-                    onMouseLeave={() => setHoveredMeetingId(null)}
-                    className={`items-center ${hoveredMeetingId === meeting.id ? 'bg-[var(--bg-base-hover)]' : 'bg-transparent'} border-none rounded-lg cursor-pointer flex gap-3 py-2.5 px-3 text-left w-full`}
-                  >
-                    <div className="flex basis-0 flex-col grow shrink gap-0.5">
-                      <div className="text-foreground font-[Inter,system-ui,sans-serif] text-sm font-medium leading-[18px]">
-                        {meeting.title}
+                <div className="flex flex-col gap-2">
+                  {group.meetings.map((meeting) => (
+                    <button
+                      key={meeting.id}
+                      type="button"
+                      onClick={() => navigate('/meeting-detail')}
+                      className="bg-background border-border rounded-[10px] border-solid border cursor-pointer flex overflow-clip p-0 text-left w-full"
+                    >
+                      <div className="shrink-0 w-1" style={{ backgroundColor: MEETING_COLOR[meeting.icon] }} />
+                      <div className="flex flex-col gap-0.5 py-4 px-[18px]">
+                        <div className="text-foreground font-[Manrope,system-ui,sans-serif] text-sm font-bold leading-[18px]">
+                          {meeting.title}
+                        </div>
+                        <div className="text-muted-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
+                          {meeting.time}
+                        </div>
                       </div>
-                      <div className="text-disabled-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
-                        {meeting.attendees}
-                      </div>
-                    </div>
-                    <div className="items-center flex flex-row-reverse gap-2">
-                      <div className="text-disabled-foreground font-[Inter,system-ui,sans-serif] text-xs leading-4">
-                        {meeting.time}
-                      </div>
-                      <MeetingIcon type={meeting.icon} />
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))
           )}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion } from 'motion/react';
 import {
   PromptInput,
   PromptInputTextarea,
@@ -34,7 +35,7 @@ const MOCK_RESPONSES: Record<number, string> = {
 - Average deal size: **$87K**
 
 **Top Insights**
-- Enterprise segment grew 23% — driven by 3 new logos from the SXSW campaign
+- Enterprise segment grew 23% — driven by 3 new logos from the Q2 launch campaign
 - SMB conversion rate dropped 4pts; likely tied to pricing feedback from discovery calls
 - Highest win rate in the Financial Services vertical (64%)
 
@@ -49,8 +50,8 @@ const MOCK_RESPONSES: Record<number, string> = {
 - 3 enterprise prospects asked about SSO/SAML support timeline
 
 **Notable Calls**
-- **Relay (Sarah Chen)** — Strong interest in API tier; asked for custom SLA
-- **Meridian Capital** — Evaluating against Gong; price-sensitive
+- **Vantage (Casey Morgan)** — Strong interest in API tier; asked for custom SLA
+- **Nexus** — Evaluating against Gong; price-sensitive
 - **Flux Labs** — Ready to expand seats if mobile app ships by Q2
 
 ---
@@ -59,7 +60,7 @@ const MOCK_RESPONSES: Record<number, string> = {
   2: `Here are the top blockers surfaced across your meetings this week:
 
 **Engineering**
-1. Auth service refactor blocking 3 downstream features (assigned: Andrey)
+1. Auth service refactor blocking 3 downstream features (assigned: Jordan)
 2. Mobile push notification reliability — reported in 2 customer calls
 
 **Sales**
@@ -115,11 +116,50 @@ const DotsLoader = () => (
 );
 
 const CopyIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
     <rect x="4" y="4" width="8" height="8" rx="1" />
     <path d="M3 10V3h7" />
   </svg>
 );
+
+const ShareIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 7.5L10 5M5 7.5L10 10" />
+    <circle cx="3.5" cy="7.5" r="1.5" />
+    <circle cx="11.5" cy="4.5" r="1.5" />
+    <circle cx="11.5" cy="10.5" r="1.5" />
+  </svg>
+);
+
+const StreamingMarkdown = ({ content }: { content: string }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(content.slice(0, index));
+      index += 3; // Reveal 3 chars at a time for smooth morphing
+      if (index > content.length) {
+        setDisplayedText(content);
+        clearInterval(interval);
+      }
+    }, 10);
+    
+    return () => clearInterval(interval);
+  }, [content]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <MessageContent markdown className="p-0 text-base [&_p]:text-base [&_li]:text-base [&_h1]:text-base [&_h2]:text-base [&_h3]:text-base">
+        {displayedText}
+      </MessageContent>
+    </motion.div>
+  );
+};
 
 const DeepResearchPage = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -221,23 +261,28 @@ const DeepResearchPage = () => {
             {messages.map((message) =>
               message.role === 'user' ? (
                 <Message key={message.id} className="justify-end">
-                  <MessageContent className="bg-secondary rounded-[18px_18px_4px_18px] text-foreground text-sm max-w-[72%]">
+                  <div className="bg-secondary rounded-[18px_18px_4px_18px] text-foreground text-sm max-w-[72%] px-4 py-3 shadow-sm">
                     {message.content}
-                  </MessageContent>
+                  </div>
                 </Message>
               ) : (
                 <Message key={message.id} className="items-start">
-                  <div className="flex flex-col gap-1 flex-1 min-w-0">
-                    <MessageContent markdown className="p-0">
-                      {message.content}
-                    </MessageContent>
-                    <MessageActions className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex flex-col gap-2 flex-1 min-w-0">
+                    <StreamingMarkdown content={message.content} />
+                    <MessageActions className="opacity-0 group-hover:opacity-100 transition-opacity gap-2">
                       <MessageAction
                         tooltip="Copy"
                         onClick={() => handleCopy(message.id, message.content)}
-                        className={copiedId === message.id ? 'text-success' : ''}
+                        className={`h-9 w-9 hover:bg-transparent hover:text-foreground text-muted-foreground ${copiedId === message.id ? 'text-success' : ''}`}
                       >
                         <CopyIcon />
+                      </MessageAction>
+                      <MessageAction
+                        tooltip="Share"
+                        onClick={() => {}}
+                        className="h-9 w-9 hover:bg-transparent hover:text-foreground text-muted-foreground"
+                      >
+                        <ShareIcon />
                       </MessageAction>
                     </MessageActions>
                   </div>

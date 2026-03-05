@@ -16,47 +16,47 @@ const MEETING = {
   time: '2:00 PM',
   duration: '22 min',
   attendees: [
-    { name: 'Ashwin Gopinath', initials: 'AG' },
-    { name: 'Andrey Ivanov', initials: 'AI' },
-    { name: 'Justin Park', initials: 'JP' },
-    { name: 'Sarah Chen', initials: 'SC' },
-    { name: 'Kristina Lee', initials: 'KL' },
-    { name: 'Marcus Webb', initials: 'MW' },
+    { name: 'Alex Rivera', initials: 'AR' },
+    { name: 'Jordan Kim', initials: 'JK' },
+    { name: 'Taylor Brooks', initials: 'TB' },
+    { name: 'Casey Morgan', initials: 'CM' },
+    { name: 'Sam Patel', initials: 'SP' },
+    { name: 'Riley Chen', initials: 'RC' },
   ],
 };
 
-const OVERVIEW = 'Team debugged missing Sentra desktop pre-meeting notifications and planned a new desktop release to improve polling-based updates. Members shared progress on SSE real-time updates, reliability fixes, and feature work across reports, emails, and diarization.';
+const OVERVIEW = 'Team reviewed Q2 launch readiness and aligned on engineering priorities heading into the release sprint. Members shared progress on the API v2 rollout, dashboard performance improvements, and upcoming customer pilots.';
 
 const KEY_POINTS = [
-  'Desktop notifications bug: Serge reported missing Sentra pre-meeting notifications; Abhi expects improved reliability after new version changes merged to main.',
-  'Mac permissions behavior: Abhi clarified macOS notifications are enabled by default; if user disables them, the app cannot re-prompt to re-enable.',
-  'Desktop release process: Andrey noted packaging requires version bumps and lacks a standard build/release process; he built a new version and planned to release it.',
-  'Real-time updates (SSE): Serge implemented displaying in-progress meetings and is finishing SSE for real-time meeting updates; team agreed sharing context/design would be helpful but not blocking.',
-  'Team progress updates: Bill improved citations, forgot-password, and refactoring; Abhi confirmed email ingest setup works; Jonathan working on hallucination mitigation and hybrid diarization; Jaden proceeding with frontend implementation while designs are on hold.',
+  'API v2 rollout: Jordan confirmed the auth service refactor is nearly complete; expects to unblock the notification system and dashboard refresh by end of week.',
+  'Push notification reliability: Riley traced a 12% failure rate on Android to a token expiry bug and is shipping a fix today.',
+  'Q2 launch prep: Taylor noted Vantage is waiting on the API v2 spec; will send by Wednesday. Sam is drafting the launch one-pager and targeting a Thursday morning draft.',
+  'Module v2 design freeze: Jordan confirmed final screens will be ready Thursday night ahead of Friday\u2019s freeze.',
+  'Enterprise pipeline: Casey flagged that Nexus is still evaluating against Gong and SOC 2 compliance came up again as a deciding factor.',
 ];
 
 const NEXT_STEPS = [
-  'Ship new desktop release: Andrey to publish the newly built desktop release ASAP and confirm notification behavior on fresh-permission machines.',
-  'Investigate missing notifications: Abhi to review logs for Serge\'s account/session and diagnose why pre-meeting notifications didn\'t trigger.',
-  'Share contractor gaps list: Andrey to resend/share the missing-approvals list with Shadi; contractors to propose scope/timelines and flag concerns today.',
-  'Finish SSE implementation: Serge to complete SSE for real-time meeting updates and share a brief context/design note for review.',
-  'Improve alerting noise: Serge to merge IaC PR for the deployed 400-error noisy-alert filtering fix.',
-  'Desktop telemetry fix: Andrey to add required environment variables (from JJ) and rebuild to restore desktop log capture/error tracking.',
+  'Send API v2 spec to Vantage: Taylor to finalize and share the API v2 spec with Vantage by Wednesday.',
+  'Fix push notification bug: Riley to ship the token expiry fix and verify Android notification delivery rates.',
+  'Draft Q2 launch one-pager: Sam to have a draft ready by Thursday morning, leading with the commitment tracking use case.',
+  'Complete Module v2 screens: Jordan to finalize all design screens before Friday\u2019s freeze at 5 PM.',
+  'Document SOC 2 status for prospects: Taylor to add current SOC 2 audit timeline to the sales deck today.',
+  'Monitor deploy pipeline: Riley to keep an eye on backend deploy flakiness and escalate if it starts blocking releases.',
 ];
 
 const TRANSCRIPT: TranscriptEntry[] = [
-  { id: '1', speaker: 'Ashwin Gopinath', initials: 'AG', timestamp: '0:00', text: "Alright, let's get started. Quick round of updates — who wants to kick off?" },
-  { id: '2', speaker: 'Andrey Ivanov', initials: 'AI', timestamp: '0:18', text: "I'll go. Auth refactor is still in progress but I'm about 70% done. Should unblock the notification system and the dashboard refresh. Targeting to have it merged by Friday EOD." },
-  { id: '3', speaker: 'Marcus Webb', initials: 'MW', timestamp: '0:52', text: "On the push notification side — we're seeing about a 12% failure rate on Android. I've traced it to a token expiry bug. Working on a fix today." },
-  { id: '4', speaker: 'Justin Park', initials: 'JP', timestamp: '1:24', text: "Good to know. On the product side — Relay is waiting on the API v2 spec. I'll get that to them by Wednesday. Also, SXSW demo prep is top of mind. Kristina, how's the one-pager coming?" },
-  { id: '5', speaker: 'Kristina Lee', initials: 'KL', timestamp: '1:55', text: "I'll have a draft by Thursday morning. Planning to lead with the commitment tracking angle since that's what resonated most with Relay last week." },
-  { id: '6', speaker: 'Ashwin Gopinath', initials: 'AG', timestamp: '2:18', text: "Perfect. And reminder — Andrey, design freeze for Pill v2 is Friday at 5. Can you make that?" },
-  { id: '7', speaker: 'Andrey Ivanov', initials: 'AI', timestamp: '2:28', text: "Yes, I'll have the final screens done Thursday night." },
-  { id: '8', speaker: 'Sarah Chen', initials: 'SC', timestamp: '2:41', text: "Quick customer update — I had a call with Meridian yesterday. They're still evaluating us against Gong but mentioned our roadmap timeline is a deciding factor. SOC 2 came up again." },
-  { id: '9', speaker: 'Ashwin Gopinath', initials: 'AG', timestamp: '3:04', text: "SOC 2 audit is tracking for mid-April completion. Once that's done we can move all four enterprise deals forward. Justin, do we have that documented for prospects?" },
-  { id: '10', speaker: 'Justin Park', initials: 'JP', timestamp: '3:19', text: "I'll add it to the sales deck today. Anything else before we close?" },
-  { id: '11', speaker: 'Marcus Webb', initials: 'MW', timestamp: '3:31', text: "Just flagging — the backend deploy pipeline has been flaky since yesterday. Not blocking anyone yet, but keeping an eye on it." },
-  { id: '12', speaker: 'Ashwin Gopinath', initials: 'AG', timestamp: '3:44', text: "Noted. Alright, that's everything. See everyone Thursday at the roadmap review." },
+  { id: '1', speaker: 'Alex Rivera', initials: 'AR', timestamp: '0:00', text: "Alright, let's get started. Quick round of updates — who wants to kick off?" },
+  { id: '2', speaker: 'Jordan Kim', initials: 'JK', timestamp: '0:18', text: "I'll go. Auth refactor is still in progress but I'm about 70% done. Should unblock the notification system and the dashboard refresh. Targeting to have it merged by Friday EOD." },
+  { id: '3', speaker: 'Riley Chen', initials: 'RC', timestamp: '0:52', text: "On the push notification side — we're seeing about a 12% failure rate on Android. I've traced it to a token expiry bug. Working on a fix today." },
+  { id: '4', speaker: 'Taylor Brooks', initials: 'TB', timestamp: '1:24', text: "Good to know. On the product side — Vantage is waiting on the API v2 spec. I'll get that to them by Wednesday. Also, Q2 demo prep is top of mind. Sam, how's the one-pager coming?" },
+  { id: '5', speaker: 'Sam Patel', initials: 'SP', timestamp: '1:55', text: "I'll have a draft by Thursday morning. Planning to lead with the commitment tracking angle since that's what resonated most with Vantage last week." },
+  { id: '6', speaker: 'Alex Rivera', initials: 'AR', timestamp: '2:18', text: "Perfect. And reminder — Jordan, design freeze for Module v2 is Friday at 5. Can you make that?" },
+  { id: '7', speaker: 'Jordan Kim', initials: 'JK', timestamp: '2:28', text: "Yes, I'll have the final screens done Thursday night." },
+  { id: '8', speaker: 'Casey Morgan', initials: 'CM', timestamp: '2:41', text: "Quick customer update — I had a call with Nexus yesterday. They're still evaluating us against Gong but mentioned our roadmap timeline is a deciding factor. SOC 2 came up again." },
+  { id: '9', speaker: 'Alex Rivera', initials: 'AR', timestamp: '3:04', text: "SOC 2 audit is tracking for mid-April completion. Once that's done we can move all four enterprise deals forward. Taylor, do we have that documented for prospects?" },
+  { id: '10', speaker: 'Taylor Brooks', initials: 'TB', timestamp: '3:19', text: "I'll add it to the sales deck today. Anything else before we close?" },
+  { id: '11', speaker: 'Riley Chen', initials: 'RC', timestamp: '3:31', text: "Just flagging — the backend deploy pipeline has been flaky since yesterday. Not blocking anyone yet, but keeping an eye on it." },
+  { id: '12', speaker: 'Alex Rivera', initials: 'AR', timestamp: '3:44', text: "Noted. Alright, that's everything. See everyone Thursday at the roadmap review." },
 ];
 
 
@@ -460,7 +460,7 @@ const MeetingDetailPage = () => {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`bg-none border-none border-b-2 cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] -mb-px mr-[20px] px-[2px] pt-0 pb-[10px] transition-colors duration-120 ease-out ${activeTab === tab.id ? 'border-b-foreground text-foreground font-medium' : 'border-b-transparent text-muted-foreground font-normal'}`}
+              className={`bg-none border-0 border-b-2 border-b-solid cursor-pointer font-[Inter,system-ui,sans-serif] text-[13px] -mb-px mr-[20px] px-[2px] pt-0 pb-[10px] transition-colors duration-120 ease-out ${activeTab === tab.id ? 'border-b-foreground text-foreground font-medium' : 'border-b-transparent text-muted-foreground font-normal'}`}
             >
               {tab.label}
             </button>

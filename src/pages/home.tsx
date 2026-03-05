@@ -1,5 +1,3 @@
-import styles from './home.module.css';
-
 interface ActionItem {
   id: string;
   title: string;
@@ -86,7 +84,7 @@ const HomePage = () => {
               <button
                 key={action.id}
                 type="button"
-                className={`flex items-center gap-[16px] py-[16px] px-[20px] bg-background rounded-lg border-none cursor-pointer text-left w-full overflow-hidden ${styles.card}`}
+                className="group flex items-center gap-[16px] py-[16px] px-[20px] bg-background rounded-lg border-none cursor-pointer text-left w-full overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-md hover:ring-1 hover:ring-border-info focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
               >
                 <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
                   <h3 className="text-foreground text-[13px] font-semibold leading-[1.4] m-0">{action.title}</h3>
@@ -94,7 +92,7 @@ const HomePage = () => {
                 </div>
                 <div className="flex items-center gap-[8px] shrink-0">
                   <span className="text-muted-foreground text-[12px] font-medium whitespace-nowrap">{action.due}</span>
-                  <ChevronRightIcon className={`text-disabled-foreground shrink-0 ${styles.chevron}`} />
+                  <ChevronRightIcon className="text-disabled-foreground shrink-0 transition duration-200 group-hover:text-muted-foreground group-hover:translate-x-px" />
                 </div>
               </button>
             ))}
@@ -113,7 +111,7 @@ const HomePage = () => {
               <button
                 key={risk.id}
                 type="button"
-                className={`flex items-center gap-[16px] py-[16px] px-[20px] bg-background rounded-lg border-none cursor-pointer text-left w-full overflow-hidden ${styles.card}`}
+                className="group flex items-center gap-[16px] py-[16px] px-[20px] bg-background rounded-lg border-none cursor-pointer text-left w-full overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-md hover:ring-1 hover:ring-border-info focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
               >
                 <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
                   <div className="flex items-center gap-[8px]">
@@ -125,7 +123,7 @@ const HomePage = () => {
                   <p className="text-subtle-foreground text-[12px] leading-normal m-0 line-clamp-1">{risk.description}</p>
                 </div>
                 <div className="flex items-center gap-[8px] shrink-0">
-                  <ChevronRightIcon className={`text-disabled-foreground shrink-0 ${styles.chevron}`} />
+                  <ChevronRightIcon className="text-disabled-foreground shrink-0 transition duration-200 group-hover:text-muted-foreground group-hover:translate-x-px" />
                 </div>
               </button>
             ))}
@@ -144,10 +142,10 @@ const HomePage = () => {
               <button
                 key={meeting.id}
                 type="button"
-                className={`flex items-center gap-[16px] py-[16px] px-[20px] rounded-lg border-none cursor-pointer text-left w-full overflow-hidden ${styles.card} ${meeting.isNext ? styles.cardNext : 'bg-background'}`}
+                className={`group flex items-center gap-[16px] py-[16px] px-[20px] rounded-lg border-none cursor-pointer text-left w-full overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${meeting.isNext ? 'bg-info-subtle ring-1 ring-border-info hover:ring-info' : 'bg-background hover:ring-1 hover:ring-border-info'}`}
               >
                 <div
-                  className={`w-[72px] shrink-0 text-right pr-[12px] border-r border-r-border-subtle mr-[4px] ${meeting.isNext ? styles.meetingTimeDivider : ''}`}
+                  className={`w-[72px] shrink-0 text-right pr-[12px] border-r mr-[4px] ${meeting.isNext ? 'border-r-border-info' : 'border-r-border-subtle'}`}
                 >
                   <span className="text-foreground text-[13px] font-semibold font-mono tabular-nums leading-none">
                     {meeting.time}
@@ -165,7 +163,7 @@ const HomePage = () => {
                       Next
                     </span>
                   )}
-                  <ChevronRightIcon className={`text-disabled-foreground shrink-0 ${styles.chevron}`} />
+                  <ChevronRightIcon className="text-disabled-foreground shrink-0 transition duration-200 group-hover:text-muted-foreground group-hover:translate-x-px" />
                 </div>
               </button>
             ))}

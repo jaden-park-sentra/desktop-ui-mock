@@ -72,7 +72,7 @@ app.on('activate', () => {
 
 app.whenReady().then(() => {
   if (process.platform === 'darwin') {
-    app.dock.setIcon(nativeImage.createFromPath(path.join(process.env.APP_ROOT, 'resources', 'icon.icns')))
+    app.dock.setIcon(nativeImage.createFromPath(path.join(process.env.APP_ROOT, 'resources', 'icon.png')))
   }
   createWindow()
 })

@@ -1,5 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
+import { usePageLabel } from '../components/app-layout';
 
 interface ConnectionDetail {
   id: string;
@@ -24,28 +25,28 @@ interface ConnectionMeeting {
 const CONNECTIONS: Record<string, ConnectionDetail> = {
   ashwin: {
     id: 'ashwin',
-    name: 'Ashwin Gopinath',
+    name: 'Alex Rivera',
     role: 'Engineering Lead',
     company: 'Sentra',
-    email: 'ashwin@sentra.co',
+    email: 'alex@sentra.co',
     metAt: 'Co-founder',
     metDate: 'Since founding',
     avatarColor: '#6366F1',
     bio: 'Co-founder and engineering lead. Oversees platform architecture and infrastructure. Previously at Google (L5) and Stripe.',
     meetings: [
       { id: '1', title: 'Weekly Team Standup', date: 'Today' },
-      { id: '2', title: 'Ashwin / Justin 1:1', date: 'Today' },
+      { id: '2', title: 'Alex / Taylor 1:1', date: 'Today' },
       { id: '3', title: 'Investor Update Prep', date: 'Feb 24' },
-      { id: '4', title: 'SXSW Launch Planning', date: 'Feb 24' },
+      { id: '4', title: 'Q2 Launch Planning', date: 'Feb 24' },
     ],
-    notes: 'Wants to ship auth refactor by EOW. Excited about Relay integration. Prefers async over standup format.',
+    notes: 'Wants to ship auth refactor by EOW. Excited about Vantage integration. Prefers async over standup format.',
   },
   andrey: {
     id: 'andrey',
-    name: 'Andrey Ivanov',
+    name: 'Jordan Kim',
     role: 'Design Lead',
     company: 'Sentra',
-    email: 'andrey@sentra.co',
+    email: 'jordan@sentra.co',
     metAt: 'Co-founder',
     metDate: 'Since founding',
     avatarColor: '#2563EB',
@@ -53,49 +54,49 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
     meetings: [
       { id: '1', title: 'Weekly Team Standup', date: 'Today' },
       { id: '2', title: 'Product Roadmap Review', date: 'Today' },
-      { id: '3', title: 'Design Review — Pill v2', date: 'Feb 24' },
+      { id: '3', title: 'Design Review — Module v2', date: 'Feb 24' },
       { id: '4', title: 'API Integration Review', date: 'Feb 24' },
     ],
-    notes: 'Finalizing Pill v2 screens before design freeze Friday. Wants to push more opinionated defaults in the product.',
+    notes: 'Finalizing Module v2 screens before design freeze Friday. Wants to push more opinionated defaults in the product.',
   },
   sarah: {
     id: 'sarah',
-    name: 'Sarah Chen',
+    name: 'Casey Morgan',
     role: 'Head of Customer Success',
-    company: 'Relay',
-    email: 'sarah.chen@relay.io',
-    metAt: 'Customer Discovery — Relay',
+    company: 'Vantage',
+    email: 'casey.morgan@vantage.io',
+    metAt: 'Customer Discovery — Vantage',
     metDate: 'Feb 25',
     avatarColor: '#DB2777',
-    bio: 'Leads customer success at Relay. Key contact for our integration partnership. Flagged onboarding friction as the top barrier to adoption.',
+    bio: 'Leads customer success at Vantage. Key contact for our integration partnership. Flagged onboarding friction as the top barrier to adoption.',
     meetings: [
-      { id: '1', title: 'Customer Discovery — Relay', date: 'Feb 25' },
+      { id: '1', title: 'Customer Discovery — Vantage', date: 'Feb 25' },
       { id: '2', title: 'Weekly Team Standup', date: 'Today' },
     ],
-    notes: "Very responsive over email. Relay's team is evaluating three vendors — we need to move fast on API docs. She reports to James Liu (CTO).",
+    notes: "Very responsive over email. Vantage's team is evaluating three vendors — we need to move fast on API docs. She reports to James Liu (CTO).",
   },
   kristina: {
     id: 'kristina',
-    name: 'Kristina Lee',
+    name: 'Sam Patel',
     role: 'Marketing Lead',
     company: 'Sentra',
-    email: 'kristina@sentra.co',
+    email: 'sam@sentra.co',
     metAt: 'GTM Strategy Sync',
     metDate: 'Feb 25',
     avatarColor: '#059669',
-    bio: 'Marketing lead at Sentra. Owns GTM strategy, content, and SXSW launch planning. Previously at HubSpot.',
+    bio: 'Marketing lead at Sentra. Owns GTM strategy, content, and Q2 launch planning. Previously at HubSpot.',
     meetings: [
       { id: '1', title: 'GTM Strategy Sync', date: 'Feb 25' },
-      { id: '2', title: 'SXSW Launch Planning', date: 'Feb 24' },
+      { id: '2', title: 'Q2 Launch Planning', date: 'Feb 24' },
     ],
-    notes: 'Drafting SXSW one-pager. Wants to align messaging with the Relay and Meridian use cases before launch.',
+    notes: 'Drafting Q2 launch one-pager. Wants to align messaging with the Vantage and Nexus use cases before launch.',
   },
   marcus: {
     id: 'marcus',
-    name: 'Marcus Webb',
+    name: 'Riley Chen',
     role: 'Backend Engineer',
     company: 'Sentra',
-    email: 'marcus@sentra.co',
+    email: 'riley@sentra.co',
     metAt: 'Weekly Team Standup',
     metDate: 'Feb 24',
     avatarColor: '#D97706',
@@ -104,35 +105,35 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
       { id: '1', title: 'Weekly Team Standup', date: 'Today' },
       { id: '2', title: 'API Integration Review', date: 'Feb 24' },
     ],
-    notes: 'Solid on infra. Pair with Ashwin on auth refactor. Ramps fast.',
+    notes: 'Solid on infra. Pair with Alex on auth refactor. Ramps fast.',
   },
   david: {
     id: 'david',
     name: 'David Park',
     role: 'Partner',
-    company: 'Sequoia Capital',
-    email: 'david@sequoiacap.com',
+    company: 'Horizon Ventures',
+    email: 'david@horizonvc.com',
     metAt: 'Investor Update Prep',
     metDate: 'Feb 22',
     avatarColor: '#7C3AED',
-    bio: 'Partner at Sequoia focused on enterprise SaaS and AI infrastructure. Led our seed round. Meets monthly.',
+    bio: 'Partner at Horizon Ventures focused on enterprise SaaS and AI infrastructure. Led our seed round. Meets monthly.',
     meetings: [
       { id: '1', title: 'Investor Update Prep', date: 'Feb 22' },
     ],
-    notes: 'Wants to see ARR trajectory and Relay case study before next board meeting. Very metric-driven.',
+    notes: 'Wants to see ARR trajectory and Vantage case study before next board meeting. Very metric-driven.',
   },
   elena: {
     id: 'elena',
-    name: 'Elena Rodriguez',
+    name: 'Elena Vasquez',
     role: 'VP Product',
-    company: 'Meridian',
-    email: 'elena@meridian.com',
-    metAt: 'SXSW Planning',
+    company: 'Nexus',
+    email: 'elena@nexus.com',
+    metAt: 'Q2 Launch Planning',
     metDate: 'Feb 20',
     avatarColor: '#0891B2',
-    bio: 'VP Product at Meridian. Anchor account target for the SXSW demo. Interested in meeting intelligence for their distributed team.',
+    bio: 'VP Product at Nexus. Anchor account target for the Q2 demo. Interested in meeting intelligence for their distributed team.',
     meetings: [
-      { id: '1', title: 'SXSW Launch Planning', date: 'Feb 20' },
+      { id: '1', title: 'Q2 Launch Planning', date: 'Feb 20' },
     ],
     notes: 'Their team has 200+ meetings per week. Pain point is action item tracking. Demo the commitments feature first.',
   },
@@ -140,16 +141,16 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
     id: 'james',
     name: 'James Liu',
     role: 'CTO',
-    company: 'Relay',
-    email: 'james.liu@relay.io',
+    company: 'Vantage',
+    email: 'james.liu@vantage.io',
     metAt: 'API Integration Review',
     metDate: 'Feb 18',
     avatarColor: '#4F46E5',
-    bio: 'CTO at Relay. Technical decision-maker for the integration. Very detail-oriented on security and data handling.',
+    bio: 'CTO at Vantage. Technical decision-maker for the integration. Very detail-oriented on security and data handling.',
     meetings: [
       { id: '1', title: 'API Integration Review', date: 'Feb 18' },
     ],
-    notes: 'Needs SOC 2 compliance docs before signing. Sarah reports to him. Prefers technical deep-dives over sales calls.',
+    notes: 'Needs SOC 2 compliance docs before signing. Casey reports to him. Prefers technical deep-dives over sales calls.',
   },
   nina: {
     id: 'nina',
@@ -164,7 +165,7 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
     meetings: [
       { id: '1', title: 'SaaS Connect Follow-up', date: 'Feb 8' },
     ],
-    notes: 'Warm lead. Team of 30 sales reps. Follow up after SXSW launch with a personalized demo.',
+    notes: 'Warm lead. Team of 30 sales reps. Follow up after Q2 launch with a personalized demo.',
   },
   tom: {
     id: 'tom',
@@ -172,10 +173,10 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
     role: 'Staff Engineer',
     company: 'Stripe',
     email: 'tom.nguyen@stripe.com',
-    metAt: 'Intro via Ashwin',
+    metAt: 'Intro via Alex',
     metDate: 'Feb 3',
     avatarColor: '#15803D',
-    bio: 'Staff engineer at Stripe. Ashwin\'s former colleague. Exploring Sentra for their internal engineering syncs.',
+    bio: "Staff engineer at Stripe. Alex's former colleague. Exploring Sentra for their internal engineering syncs.",
     meetings: [
       { id: '1', title: 'Intro Call — Stripe', date: 'Feb 3' },
     ],
@@ -209,7 +210,7 @@ const CONNECTIONS: Record<string, ConnectionDetail> = {
     meetings: [
       { id: '1', title: 'YC Batch Dinner', date: 'Jan 15' },
     ],
-    notes: 'Open to co-marketing at SXSW. Their product complements ours. Explore integration later.',
+    notes: 'Open to co-marketing at Q2 launch. Their product complements ours. Explore integration later.',
   },
   priya: {
     id: 'priya',
@@ -257,33 +258,16 @@ const ConnectionDetailPage = () => {
   const [hoveredMeetingId, setHoveredMeetingId] = useState<string | null>(null);
   const [personalNotes, setPersonalNotes] = useState(connection.notes);
 
+  usePageLabel(connection.name);
+
   return (
     <div className="bg-[var(--bg-base)] flex flex-col h-full text-[12px] [font-synthesis:none] leading-[16px] antialiased overflow-auto items-center pb-[40px] px-[24px] pt-[56px] relative">
-
-      {/* Breadcrumb */}
-      <div className="items-center flex gap-[6px] left-[20px] absolute top-[16px]">
-        <button
-          type="button"
-          onClick={() => navigate('/connections')}
-          className="appearance-none bg-transparent border-none text-[#9CA3AF] cursor-pointer font-[Geist,system-ui,sans-serif] text-[12px] font-medium leading-[16px] p-0"
-        >
-          Connections
-        </button>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M3.5 2L6.5 5L3.5 8" stroke="#9CA3AF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <div className="text-[var(--fg-base)] font-[Geist,system-ui,sans-serif] text-[12px] font-medium leading-[16px]">
-          {connection.name}
-        </div>
-      </div>
-
       <div className="w-full max-w-[520px]">
 
         {/* Profile header */}
         <div className="items-center flex flex-col gap-[12px] pt-[16px] pb-[28px]">
           <div
-            className="items-center rounded-full text-white flex font-[Inter,system-ui,sans-serif] text-[24px] font-semibold h-[72px] justify-center tracking-[0.02em] w-[72px]"
-            style={{ backgroundColor: connection.avatarColor }}
+            className="items-center rounded-full flex font-[Inter,system-ui,sans-serif] text-[24px] font-medium h-[72px] justify-center tracking-[0.02em] w-[72px] bg-shell border border-border-strong text-foreground shadow-sm"
           >
             {getInitials(connection.name)}
           </div>
@@ -305,7 +289,7 @@ const ConnectionDetailPage = () => {
         {/* Met context */}
         <div className="bg-[var(--bg-subtle)] rounded-[10px] flex gap-[24px] py-[16px] px-[20px] mb-[24px]">
           <div className="flex flex-col gap-[2px]">
-            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] uppercase">
+            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px]">
               Met through
             </div>
             <div className="text-[var(--fg-base)] font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[18px]">
@@ -313,7 +297,7 @@ const ConnectionDetailPage = () => {
             </div>
           </div>
           <div className="flex flex-col gap-[2px]">
-            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] uppercase">
+            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px]">
               First contact
             </div>
             <div className="text-[var(--fg-base)] font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[18px]">
@@ -321,7 +305,7 @@ const ConnectionDetailPage = () => {
             </div>
           </div>
           <div className="flex flex-col gap-[2px]">
-            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] uppercase">
+            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px]">
               Meetings
             </div>
             <div className="text-[var(--fg-base)] font-[Inter,system-ui,sans-serif] text-[13px] font-medium leading-[18px]">
@@ -333,7 +317,7 @@ const ConnectionDetailPage = () => {
         {/* About */}
         {connection.bio && (
           <div className="mb-[24px]">
-            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px] uppercase">
+            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px]">
               About
             </div>
             <div className="text-[var(--fg-subtle)] font-[Inter,system-ui,sans-serif] text-[13px] leading-[20px]">
@@ -344,7 +328,7 @@ const ConnectionDetailPage = () => {
 
         {/* Personal notes */}
         <div className="mb-[24px]">
-          <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px] uppercase">
+          <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px]">
             Personal notes
           </div>
           <textarea
@@ -361,7 +345,7 @@ const ConnectionDetailPage = () => {
         {/* Shared meetings */}
         {connection.meetings.length > 0 && (
           <div>
-            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px] uppercase">
+            <div className="text-[var(--fg-disabled)] font-[Inter,system-ui,sans-serif] text-[11px] font-medium tracking-[0.06em] leading-[14px] mb-[8px]">
               Shared meetings
             </div>
             <div className="flex flex-col">

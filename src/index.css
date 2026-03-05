@@ -5,6 +5,14 @@ body {
   font-family: var(--font-family);
 }
 
+@utility drag {
+  -webkit-app-region: drag;
+}
+
+@utility no-drag {
+  -webkit-app-region: no-drag;
+}
+
 @theme inline {
   --color-background: var(--bg-base);
   --color-foreground: var(--fg-base);
@@ -28,4 +36,7 @@ body {
   --color-base-pressed: var(--bg-base-pressed);
   --color-hover-overlay: var(--bg-hover-overlay);
   --shadow-border-base: var(--shadow-border-base);
+  --shadow-card: var(--shadow-card);
+  --shadow-md: var(--shadow-md);
+  --color-border-info: var(--border-info);
 }

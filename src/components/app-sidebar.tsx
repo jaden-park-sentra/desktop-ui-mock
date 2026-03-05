@@ -149,27 +149,15 @@ const FooterBtn = ({ icon, label, active, onClick }: FooterBtnProps) => (
 );
 
 const SidebarFooterToggles = () => {
-  const { resolvedTheme, setTheme, fontFamily, setFontFamily } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
   return (
-    <>
-      <FooterBtn
-        icon={isDark ? <MoonFilled width={14} height={14} /> : <SunFilled width={14} height={14} />}
-        label={isDark ? "Light Mode" : "Dark Mode"}
-        onClick={() => setTheme(isDark ? "light" : "dark")}
-      />
-      <FooterBtn
-        icon={
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <text x="1" y="11.5" fontSize="11" fontWeight="600" fontFamily="system-ui" fill="currentColor">A</text>
-          </svg>
-        }
-        label={fontFamily === "inter" ? "Inter" : "Geist"}
-        active={fontFamily === "inter"}
-        onClick={() => setFontFamily(fontFamily === "inter" ? "geist" : "inter")}
-      />
-    </>
+    <FooterBtn
+      icon={isDark ? <MoonFilled width={14} height={14} /> : <SunFilled width={14} height={14} />}
+      label={isDark ? "Light Mode" : "Dark Mode"}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+    />
   );
 };
 
